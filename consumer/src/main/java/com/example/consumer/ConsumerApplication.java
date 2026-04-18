@@ -1,5 +1,7 @@
 package com.example.consumer;
 
+import com.example.consumer.models.Person;
+import com.example.consumer.services.StatsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,26 +24,30 @@ public class ConsumerApplication {
     }
 
     @Bean
-    public Consumer<?> personsInputChannel() {
+    public Consumer<Person> personsInputChannel() {
         return value -> {
-            log.info("Received person on channel {}: {}", "personsInputChannel", value);
+            logInfo("personsInputChannel", value);
             service.incFirst();
         };
     }
 
     @Bean
-    public Consumer<?> othersInputChannel() {
+    public Consumer<Person> othersInputChannel() {
         return value -> {
-            log.info("Received person on channel {}: {}", "othersInputChannel", value);
+            logInfo("othersInputChannel", value);
             service.incSecond();
         };
     }
 
     @Bean
-    public Consumer<?> allInputChannel() {
+    public Consumer<Person> allInputChannel() {
         return value -> {
-            log.info("Received person on channel {}: {}", "allInputChannel", value);
+            logInfo("allInputChannel", value);
             service.incThird();
         };
+    }
+
+    private void logInfo(String channel, Person value) {
+        log.info("Received person on channel {}: {}", channel, value);
     }
 }

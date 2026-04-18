@@ -2,12 +2,10 @@ spring:
   application:
     name: rabbit-stream-producer
   cloud:
+    function:
+      definition: first;second;third
     stream:
       defaultBinder: rabbit
-      poller:
-        fixed-delay: 3000
-      function:
-        definition: first;second;third
       bindings:
         first-out-0:
           destination: persons-topic
@@ -22,24 +20,24 @@ spring:
         bindings:
           first-out-0:
             producer:
-              durable: false
               transacted: true
               routing-key-expression: headers.myRoutingKey
               exchangeType: topic
           second-out-0:
             producer:
-              durable: false
               transacted: true
               routing-key-expression: headers.myRoutingKey
               exchangeType: topic
           third-out-0:
             producer:
-              durable: false
               transacted: true
               routing-key-expression: headers.myRoutingKey
               exchangeType: topic
   rabbitmq:
-    broker-url: tcp://127.0.0.1:5672
     username: myuser
     password: mypass
     host: localhost
+    port: 5672
+
+server:
+  port: 8082

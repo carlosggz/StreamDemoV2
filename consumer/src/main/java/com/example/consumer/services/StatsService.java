@@ -1,4 +1,4 @@
-package com.example.consumer;
+package com.example.consumer.services;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;

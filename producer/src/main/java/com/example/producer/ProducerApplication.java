@@ -1,7 +1,8 @@
 package com.example.producer;
 
-import com.example.producer.dtos.Person;
+import com.example.producer.models.Person;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +39,9 @@ public class ProducerApplication {
     }
 
     private Message<Person> getMessage(String routingKey) {
-        String id = UUID.randomUUID().toString();
-        Person person = new Person(id, routingKey + "-" + id, LocalDateTime.now().getSecond());
-        Message<Person> message = MessageBuilder
+        val id = UUID.randomUUID().toString();
+        val person = new Person(id, routingKey + "-" + id, LocalDateTime.now().getSecond());
+        val message = MessageBuilder
                 .withPayload(person)
                 .setHeader(ROUTING_KEY, routingKey)
                 .build();

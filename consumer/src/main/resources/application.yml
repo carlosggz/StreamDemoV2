@@ -2,9 +2,9 @@ spring:
   application:
     name: rabbit-stream-consumer
   cloud:
+    function:
+      definition: personsInputChannel;othersInputChannel;allInputChannel
     stream:
-      function:
-        definition: personsInputChannel;othersInputChannel;allInputChannel
       defaultBinder: rabbit
       bindings:
         personsInputChannel-in-0:
@@ -12,16 +12,19 @@ spring:
           group: group1
           consumer:
             concurrency: 5
+            max-attempts: 3
         othersInputChannel-in-0:
           destination: persons-topic
           group: group2
           consumer:
             concurrency: 5
+            max-attempts: 3
         allInputChannel-in-0:
           destination: persons-topic
           group: group3
           consumer:
             concurrency: 5
+            max-attempts: 3
       rabbit:
         bindings:
           personsInputChannel-in-0:
@@ -30,9 +33,7 @@ spring:
               autoBindDlq: true
               republishToDlq: false
               requeueRejected: true
-              maxAttempts: 3
               transacted: true
-              durable: false
               bindingRoutingKey: first.*.key,third.*.key
               bindingRoutingKeyDelimiter: ','
           othersInputChannel-in-0:
@@ -41,9 +42,7 @@ spring:
               autoBindDlq: true
               republishToDlq: false
               requeueRejected: true
-              maxAttempts: 3
               transacted: true
-              durable: false
               bindingRoutingKey: second.*.key
           allInputChannel-in-0:
             consumer:
@@ -51,12 +50,13 @@ spring:
               autoBindDlq: true
               republishToDlq: false
               requeueRejected: true
-              maxAttempts: 3
               transacted: true
-              durable: false
               bindingRoutingKey: "*.*.key"
   rabbitmq:
-    broker-url: tcp://127.0.0.1:5672
     username: myuser
     password: mypass
     host: localhost
+    port: 5672
+
+server:
+  port: 8081

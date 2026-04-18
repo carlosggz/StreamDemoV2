@@ -1,5 +1,8 @@
 package com.example.consumer;
 
+import com.example.consumer.models.Person;
+import com.example.consumer.services.StatsService;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,9 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.stream.binder.test.EnableTestBinder;
 import org.springframework.cloud.stream.binder.test.InputDestination;
-import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
-import org.springframework.context.annotation.Import;
 import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.stream.Stream;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         "spring.cloud.stream.bindings.othersInputChannel-in-0.destination=persons-topic2",
         "spring.cloud.stream.bindings.allInputChannel-in-0.destination=persons-topic3"
 })
-@Import(TestChannelBinderConfiguration.class)
+@EnableTestBinder
 class ConsumerApplicationTests {
 
     @Autowired
@@ -42,8 +44,13 @@ class ConsumerApplicationTests {
     @ParameterizedTest
     @MethodSource("cases")
     void messagesAreReceived(String topicName, int expectedFirst, int expectedSecond, int expectedThird) {
+        //given
+        val person = new Person("id1", "Peter Parker", 44);
 
-        inputDestination.send(MessageBuilder.withPayload("test").build(), topicName);
+        //when
+        inputDestination.send(MessageBuilder.withPayload(person).build(), topicName);
+
+        //then
         assertEquals(expectedFirst, service.getFirst());
         assertEquals(expectedSecond, service.getSecond());
         assertEquals(expectedThird, service.getThird());
@@ -51,9 +58,9 @@ class ConsumerApplicationTests {
 
     static Stream<Arguments> cases() {
         return Stream.of(
-                Arguments.of("persons-topic1",  1, 0, 0),
-                Arguments.of("persons-topic2",  0, 1, 0),
-                Arguments.of("persons-topic3",  0, 0, 1)
+                Arguments.of("persons-topic1", 1, 0, 0),
+                Arguments.of("persons-topic2", 0, 1, 0),
+                Arguments.of("persons-topic3", 0, 0, 1)
         );
     }
 }
